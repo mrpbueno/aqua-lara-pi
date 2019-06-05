@@ -19,7 +19,7 @@ class RpiListener
     {
         $rpi = $event->getRpi();
 
-        if ($rpi->temperature > 50) {
+        if ($rpi->temperature > 60) {
             $text = "Problema! Temperatura RPI em {$rpi->temperature}°C";
             AlertRepository::setAlert('rpi_temperature','problem', $text, $rpi->temperature);
         } else {
@@ -43,7 +43,7 @@ class RpiListener
             AlertRepository::setAlert('rpi_disk','ok', $text, $rpi->disk);
         }
 
-        if ($rpi->cpu > 50) {
+        if ($rpi->cpu > 90) {
             $text = "Problema! CPU RPI em {$rpi->cpu}%";
             AlertRepository::setAlert('rpi_cpu','problem', $text, $rpi->cpu);
         } else {
