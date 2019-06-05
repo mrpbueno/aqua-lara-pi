@@ -11,7 +11,7 @@ class PhotoCommand extends Command
     /**
      * @var string Command Name
      */
-    protected $name = "photo";
+    protected $name = "foto";
 
     /**
      * @var string Command Description

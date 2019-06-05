@@ -12,7 +12,7 @@ class ClimateCommand extends Command
     /**
      * @var string Command Name
      */
-    protected $name = "climate";
+    protected $name = "ambiente";
 
     /**
      * @var string Command Description

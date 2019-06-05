@@ -16,7 +16,7 @@ class AquariumCommand extends Command
     /**
      * @var string Command Name
      */
-    protected $name = "aquarium";
+    protected $name = "aquario";
 
     /**
      * @var string Command Description
