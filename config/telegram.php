@@ -60,5 +60,6 @@ return [
         App\Commands\ClimateCommand::class,
         App\Commands\PhotoCommand::class,
         App\Commands\VideoCommand::class,
+        App\Commands\RpiCommand::class,
     ],
 ];

@@ -28,7 +28,7 @@ class VideoCommand extends Command
         if ($chat_id == env('CHAT_ID')) {
             $text = "Vídeo enviado";
             $path = base_path()."/storage/cam/video.avi";
-            exec("ffmpeg -t 20 -y -loglevel quiet -f v4l2 -r 10 -s 1280x720 -i /dev/video0 {$path}");
+            exec("ffmpeg -t 30 -y -loglevel quiet -f v4l2 -r 10 -s 1280x720 -i /dev/video0 {$path}");
 
             MessageRepository::storeSend($text);
 
