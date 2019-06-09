@@ -15,5 +15,4 @@
 - sudo pip install hcsr04sensor
 - Instalar pi-blaster https://github.com/sarfata/pi-blaster/
 
-- crontab -e
-- php /var/www/aqua-lara-pi/artisan schedule:run >> /dev/null 2>&1
+- crontab -e * * * * * php /var/www/aqua-lara-pi/artisan schedule:run >> /dev/null 2>&1
