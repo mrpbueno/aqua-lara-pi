@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Co2;
 use App\Repositories\Co2Repository;
+use App\Timer;
 use Charts;
 use Illuminate\Http\Request;
 
@@ -44,6 +45,11 @@ class Co2Controller extends Controller
     {
         $co2 = Co2Repository::findOrFail($id);
         $co2->update($request->all());
+
+        // Reset o timer do co2 (1 = desligado)
+        Timer::where('id','>','0')->update(['co2' => 1]);
+        // Seta os horários com co2 ligado (0 = ligado)
+        Timer::whereBetween('time',[$request['start'],$request['stop']])->update(['co2' => 0]);
 
         return redirect()->route('aquarium.co2.index');
     }

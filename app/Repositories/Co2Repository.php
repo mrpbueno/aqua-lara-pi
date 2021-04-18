@@ -33,10 +33,12 @@ class Co2Repository extends Repository
                 // Liga o CO2
                 self::setPower(0);
                 file_put_contents("/dev/pi-blaster", "{$co2->gpio}=0\n");
+                file_put_contents("/dev/pi-blaster", "12=0\n");
             } else {
                 // Desliga o CO2
                 self::setPower(1);
                 file_put_contents("/dev/pi-blaster", "{$co2->gpio}=1\n");
+                file_put_contents("/dev/pi-blaster", "12=1\n");
             }
         }
     }
@@ -84,5 +86,10 @@ class Co2Repository extends Repository
         $status = $value == 1 ? 'desligado' : 'ligado';
 
         return $status;
+    }
+
+    public static function autoPower($active)
+    {
+        Co2::where('id', 1)->update(['active' => $active]);
     }
 }

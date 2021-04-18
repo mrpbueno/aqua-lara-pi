@@ -19,7 +19,7 @@ class TemperatureListener
     {
         $temperature = $event->getTemperature();
 
-        if ($temperature->temperature < 24.0 || $temperature->temperature > 28.0) {
+        if ($temperature->temperature < 23.0 || $temperature->temperature > 28.0) {
             $text = "Problema! Temperatura em {$temperature->temperature}°C";
             AlertRepository::setAlert('temperature','problem', $text, $temperature->temperature);
         } else {

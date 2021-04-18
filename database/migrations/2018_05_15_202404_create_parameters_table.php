@@ -25,6 +25,7 @@ class CreateParametersTable extends Migration
             $table->decimal('cl', 4, 1)->nullable($value = true);
             $table->decimal('kh', 4, 1)->nullable($value = true);
             $table->decimal('gh', 4, 1)->nullable($value = true);
+            $table->decimal('co2', 4, 1)->nullable($value = true);
             $table->timestamps();
         });
     }

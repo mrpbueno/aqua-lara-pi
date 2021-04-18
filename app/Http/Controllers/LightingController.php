@@ -3,14 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Repositories\LightingRepository;
+use App\Timer;
+use DateInterval;
+use DateTime;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Log;
 
 class LightingController extends Controller
 {
     /**
      * Show the application Iluminação.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
+     * @throws Exception
      */
     public function index()
     {
@@ -24,7 +31,7 @@ class LightingController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function edit($id)
     {
@@ -37,20 +44,21 @@ class LightingController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param int $id
+     * @return Response
+     * @throws Exception
      */
     public function update(Request $request, $id)
     {
         // tempo de duração do amanhecer e anoitecer
         $tempo = (100 / $request['offset']);
         // calcula a hora:minuto do termino do amanhecer
-        $sunrise_stop = new \DateTime($request['amanhecer']);
-        $sunrise_stop->add(new \DateInterval("PT".$tempo."M"));
+        $sunrise_stop = new DateTime($request['amanhecer']);
+        $sunrise_stop->add(new DateInterval("PT".$tempo."M"));
         // calcula a hora:minuto do termino do anoitecer
-        $sunset_stop = new \DateTime($request['anoitecer']);
-        $sunset_stop->add(new \DateInterval("PT".$tempo."M"));
+        $sunset_stop = new DateTime($request['anoitecer']);
+        $sunset_stop->add(new DateInterval("PT".$tempo."M"));
         // converte o offset para float 0.00
         $offset = $request['offset'] * 0.01;
         $power = $request['power'] * 0.01;
@@ -67,6 +75,27 @@ class LightingController extends Controller
             'max' => $max,
             'active' => $request['active']
         ]);
+
+        $power_start = $offset;
+        $power_stop = $max;
+        $sunrise_start = new DateTime($request['amanhecer']);
+        $sunset_start = new DateTime($request['anoitecer']);
+        // Reset o timer da iluminação (0 = desligado)
+        Timer::where('id','>','0')->update(['light' => 0]);
+        // Seta os horários com a potência máxima
+        Timer::whereBetween('time',[$sunrise_stop->format('H:i:s'),$request['anoitecer']])->update(['light' => $max]);
+        // Seta as potências do amanhecer e anoitecer
+        for ($i=0;$i<$tempo;$i++) {
+            //Log::debug($sunrise_start->format('H:i:s')." ".$power_start);
+            //Log::debug($sunset_start->format('H:i:s')." ".$power_stop);
+            Timer::where('time','=',$sunrise_start->format('H:i:s'))->update(['light' => $power_start]);
+            $sunrise_start->add(new DateInterval("PT1M"));
+            $power_start=$power_start+$offset;
+
+            Timer::where('time','=',$sunset_start->format('H:i:s'))->update(['light' => $power_stop]);
+            $sunset_start->add(new DateInterval("PT1M"));
+            $power_stop=$power_stop-$offset;
+        }
 
         return redirect()->route('aquarium.lighting.index');
     }

@@ -32,9 +32,13 @@ class LevelJob implements ShouldQueue
     {
         $path = base_path();
         $value = exec("python $path/python/level.py");
-        $value = [
-            'level' => (float)$value
-        ];
-        Level::create($value);
+        if ($value > 0) {
+            $value = [
+                'level' => (float)$value
+            ];
+            Level::create($value);
+        } else {
+            Level::create(0);
+        }
     }
 }

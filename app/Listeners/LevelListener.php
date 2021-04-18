@@ -19,7 +19,7 @@ class LevelListener
     {
         $level = $event->getLevel();
 
-        if ($level->level > 4.0) {
+        if ($level->level > 4.0 || $level->level == 0) {
             $text = "Problema! Nível em {$level->level}cm";
             AlertRepository::setAlert('level','problem', $text, $level->level);
         } else {

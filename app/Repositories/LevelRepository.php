@@ -77,4 +77,25 @@ class LevelRepository extends Repository
 
         return $chart;
     }
+
+    public static function chartLastMonth()
+    {
+        $value = Level::select(DB::raw("DATE(created_at) AS day, MAX(level) as max"))
+            ->where('created_at','>',DB::raw('DATE_SUB(NOW(), INTERVAL 60 DAY)'))
+            ->groupBy('day')->orderBy('day','asc')->get();
+        $days = $value->map(function ($value) {
+            $day = date('d/m/y', strtotime($value->day));
+            return $day;
+        });
+
+        $chart = Charts::multi('line', 'chartjs')
+            ->title('')
+            ->dimensions(0, 250)
+            ->colors(['#00c0ef'])
+            ->labels($days)
+            ->dataset('Nível',$value->pluck('max'))
+            ->responsive(false);
+
+        return $chart;
+    }
 }

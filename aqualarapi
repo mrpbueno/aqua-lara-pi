@@ -1,0 +1,2 @@
+#!/bin/bash
+sudo pi-blaster --gpio 12,16,18,20,21

@@ -18,6 +18,7 @@ class Parameter extends Model
         'cl',
         'kh',
         'gh',
+        'co2',
     ];
 
     protected $casts = [

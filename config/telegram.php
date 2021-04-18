@@ -61,5 +61,7 @@ return [
         App\Commands\PhotoCommand::class,
         App\Commands\VideoCommand::class,
         App\Commands\RpiCommand::class,
+        App\Commands\LightingAutoOffCommand::class,
+        App\Commands\LightingAutoOnCommand::class,
     ],
 ];

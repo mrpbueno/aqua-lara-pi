@@ -14,5 +14,12 @@
 - sudo pip install Adafruit_DHT
 - sudo pip install hcsr04sensor
 - Instalar pi-blaster https://github.com/sarfata/pi-blaster/
+- sudo pi-blaster --gpio 12,16,18,20,21
+- sudo nano /etc/init.d/aqualarapi
+- #!/bin/bash 
+- sudo pi-blaster --gpio 12,16,18,20,21
+- sudo chmod 755 /etc/init.d/aqualarapi
+- sudo update-rc.d aqualarapi defaults
+- sudo shutdown -r now
 
 - crontab -e * * * * * php /var/www/aqua-lara-pi/artisan schedule:run >> /dev/null 2>&1

@@ -3,7 +3,9 @@
 namespace App\Repositories;
 
 use App\Lighting;
+use App\Timer;
 use Charts;
+use Log;
 
 class LightingRepository extends Repository
 {
@@ -16,43 +18,6 @@ class LightingRepository extends Repository
     }
 
     /**
-     * Controla a iluminação ao amanhecer
-     *
-     * @param float $power
-     * @param float $max
-     * @param float $offset
-     * @return void
-     */
-    private static function sunrise($power, $max, $offset)
-    {
-        // se a potência for menor que $max
-        if($power < $max){
-            // incrementa com o offset informado
-            $power = $power + $offset;
-            // realiza o update da potência
-            self::setPower($power);
-        }
-    }
-
-    /**
-     * Controla a iluminação ao anoitecer
-     *
-     * @param float $power
-     * @param float $offset
-     * @return void
-     */
-    private static function sunset($power, $offset)
-    {
-        // se a potência for maior que 0%
-        if($power > 0.00){
-            // decrementa com o offset informado
-            $power = $power - $offset;
-            // realiza o update da potência
-            self::setPower($power);
-        }
-    }
-
-    /**
      * Controla a iluminação de forma automática
      *
      * @return void
@@ -61,32 +26,32 @@ class LightingRepository extends Repository
     {
         // lê as informações da uliminação
         $light = Lighting::first();
-        // se modo automático ativo
-        if($light->active == 1) {
-            // armazena a hora atual
-            $now = date('H:i:s');
-            // verefica se a hora atual pertence ao amanhecer
-            if ($now >= date($light->sunrise_start) && $now <= date($light->sunrise_stop)) {
-                self::sunrise($light->power, $light->max, $light->offset);
-            }
-            // verefica se a hora atual pertence ao anoitecer
-            elseif ($now >= date($light->sunset_start) && $now <= date($light->sunset_stop)) {
-                self::sunset($light->power, $light->offset);
-            }
-            // garante a iluminação apagada a noite caso ocorra falta de energia durante o anoitecer
-            elseif ($now > date($light->sunset_stop) && $light->power > 0) {
-                self::setPower(0);
-            }
+        // modo automático ativado
+        if ($light->active == 1) {
+            // horário atual
+            $now = date('H:i:00');
+            // pega a potência do timer
+            $power = Timer::where('time', $now)->value('light');
+            self::setPower($power);
+        } else {
+            // modo automático desativado
+            $power = self::getPower();
         }
-        // aciona a iluminação
-        $power = self::getPower();
-        file_put_contents("/dev/pi-blaster", "{$light->gpio}={$power}\n");
+        //Log::debug($now." ".$power);
+        if ($power == 1) {
+            file_put_contents("/dev/pi-blaster", "16=0\n");
+            file_put_contents("/dev/pi-blaster", "{$light->gpio}=1\n");
+        } else {
+            file_put_contents("/dev/pi-blaster", "16=1\n");
+            file_put_contents("/dev/pi-blaster", "{$light->gpio}={$power}\n");
+        }
     }
 
     /**
      * Cria o gráfico do fotoperíodo
      *
      * @return Charts
+     * @throws \Exception
      */
     public static function chart()
     {
@@ -102,28 +67,11 @@ class LightingRepository extends Repository
 
             return $chart;
         }
-        $power = 0;
-        $horaInicial = new \DateTime($light->sunrise_start);
-        $horaFinal = new \DateTime($light->sunset_stop);
 
-        while($horaInicial <= $horaFinal) {
-
-            $time[] = $horaInicial->format('H:i');
-            $value[] = $power;
-
-            if ($horaInicial->format('H:i:s') >= $light->sunrise_start && $horaInicial->format('H:i:s') < $light->sunrise_stop){
-                if ($power < $light->max * 100)
-                    $power = $power + ($light->offset*100);
-            }
-            elseif ($horaInicial->format('H:i:s') >= $light->sunset_start && $horaInicial->format('H:i:s') <= $light->sunset_stop){
-                if ($power > 0.00)
-                    $power = $power - ($light->offset * 100);
-            }
-            else{
-                $power = $light->max * 100;
-            }
-
-            $horaInicial->add(new \DateInterval('PT1M'));
+        $timers = Timer::all();
+        foreach ($timers as $timer) {
+            $time[] = $timer->time;
+            $value[] = $timer->light * 100;
         }
 
         $chart = Charts::create('line', 'chartjs')

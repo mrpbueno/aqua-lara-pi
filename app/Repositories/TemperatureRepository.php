@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Climate;
 use App\Temperature;
 use Charts;
 use DB;
@@ -65,7 +66,8 @@ class TemperatureRepository extends Repository
      */
     public static function chart()
     {
-        $value = Temperature::where('created_at','>',DB::raw('DATE_SUB(NOW(), INTERVAL 24 HOUR)'))->get();
+        $value = Temperature::where('created_at','>',DB::raw('DATE_SUB(NOW(), INTERVAL 1 DAY)'))->get();
+        $climate = Climate::where('created_at','>',DB::raw('DATE_SUB(NOW(), INTERVAL 1 DAY)'))->get();
         $times = $value->map(function ($value) {
             return $value->created_at->format('H:i');
         });
@@ -73,9 +75,10 @@ class TemperatureRepository extends Repository
         $chart = Charts::multi('line', 'chartjs')
             ->title('')
             ->dimensions(0, 250)
-            ->colors(['#f39c12'])
+            ->colors(['#f39c12','#00c0ef'])
             ->labels($times)
-            ->dataset('Temperatura',$value->pluck('temperature'))
+            ->dataset('Aquário',$value->pluck('temperature'))
+            ->dataset('Ambiente',$climate->pluck('temperature'))
             ->responsive(false);
 
         return $chart;
@@ -83,7 +86,9 @@ class TemperatureRepository extends Repository
 
     public static function chartMinMax()
     {
-        $value = Temperature::select(DB::raw("DATE(created_at) AS day,MIN(temperature) AS min,MAX(temperature) AS max"))->where('created_at','>',DB::raw('DATE_SUB(NOW(), INTERVAL 30 DAY)'))->groupBy('day')->orderBy('day','asc')->get();
+        $value = Temperature::select(DB::raw("DATE(created_at) AS day,MIN(temperature) AS min,MAX(temperature) AS max"))
+            ->where('created_at','>',DB::raw('DATE_SUB(NOW(), INTERVAL 180 DAY)'))
+            ->groupBy('day')->orderBy('day','asc')->get();
         $days = $value->map(function ($value) {
             $day = date('d/m/y', strtotime($value->day));
             return $day;
@@ -103,7 +108,10 @@ class TemperatureRepository extends Repository
 
     public static function chartMinMaxMonth()
     {
-        $value = Temperature::select(DB::raw("CONCAT_WS('-',YEAR(created_at),MONTH(created_at)) as month,MIN(temperature) AS min,MAX(temperature) AS max"))->where('created_at','>',DB::raw('DATE_SUB(NOW(), INTERVAL 365 DAY)'))->groupBy('month')->orderBy('created_at','asc')->get();
+        $value = Temperature::select(DB::raw("CONCAT_WS('-',YEAR(created_at),MONTH(created_at)) as month,
+        MIN(temperature) AS min,MAX(temperature) AS max"))
+            ->where('created_at','>',DB::raw('DATE_SUB(NOW(), INTERVAL 365 DAY)'))
+            ->groupBy('month')->orderBy('created_at','asc')->get();
         $months = $value->map(function ($value) {
             $month = date('m/Y', strtotime($value->month));
 

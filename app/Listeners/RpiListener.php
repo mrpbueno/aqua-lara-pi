@@ -51,7 +51,7 @@ class RpiListener
             AlertRepository::setAlert('rpi_cpu','ok', $text, $rpi->cpu);
         }
 
-        if ($rpi->uptime < 300) {
+        if ($rpi->uptime < 600) {
             $value = round($rpi->uptime / 60, 1);
             $text = "Problema! RPI reiniciado em {$value} minutos";
             AlertRepository::setAlert('rpi_uptime','problem', $text, $value);

@@ -114,7 +114,9 @@ class ClimateRepository extends Repository
 
     public static function chartTemperatureMinMax()
     {
-        $value = Climate::select(DB::raw("DATE(created_at) AS day,MIN(temperature) AS min,MAX(temperature) AS max"))->where('created_at','>',DB::raw('DATE_SUB(NOW(), INTERVAL 30 DAY)'))->groupBy('day')->orderBy('day','asc')->get();
+        $value = Climate::select(DB::raw("DATE(created_at) AS day,MIN(temperature) AS min,MAX(temperature) AS max"))
+            ->where('created_at','>',DB::raw('DATE_SUB(NOW(), INTERVAL 60 DAY)'))
+            ->groupBy('day')->orderBy('day','asc')->get();
         $days = $value->map(function ($value) {
             $day = date('d/m/y', strtotime($value->day));
             return $day;
@@ -134,7 +136,9 @@ class ClimateRepository extends Repository
 
     public static function chartHumidityMinMax()
     {
-        $value = Climate::select(DB::raw("DATE(created_at) AS day,MIN(humidity) AS min,MAX(humidity) AS max"))->where('created_at','>',DB::raw('DATE_SUB(NOW(), INTERVAL 30 DAY)'))->groupBy('day')->orderBy('day','asc')->get();
+        $value = Climate::select(DB::raw("DATE(created_at) AS day,MIN(humidity) AS min,MAX(humidity) AS max"))
+            ->where('created_at','>',DB::raw('DATE_SUB(NOW(), INTERVAL 60 DAY)'))
+            ->groupBy('day')->orderBy('day','asc')->get();
         $days = $value->map(function ($value) {
             $day = date('d/m/y', strtotime($value->day));
             return $day;

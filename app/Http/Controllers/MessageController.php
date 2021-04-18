@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Repositories\MessageRepository;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Telegram;
 
@@ -17,13 +18,13 @@ class MessageController extends Controller
 
     /**
      * @param Request $request
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
     public function send(Request $request)
     {
         Telegram::sendMessage([
             'chat_id' => env('CHAT_ID'),
-            'text' => $request->get('message')
+            'text' => $request->get('message'),
         ]);
         MessageRepository::storeSend($request->get('message'));
 

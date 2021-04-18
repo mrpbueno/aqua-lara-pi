@@ -52,6 +52,26 @@
             <!-- /.box-body -->
         </div>
     </div>
+        <!-- Chart -->
+        <div class="row">
+            <div class="box box-info">
+                <div class="box-header with-border">
+                    <h3 class="box-title"><i class="fa fa-bar-chart"></i>{{ trans('app.aqua_level') }}</h3>
+
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                    </div>
+                </div>
+                <div class="box-body">
+
+                    {!! $chartLastMonth->html() !!}
+
+                </div>
+                <!-- /.box-body -->
+            </div>
+        </div>
     </section>
 @stop
 @section('css')
@@ -60,4 +80,5 @@
 @section('js')
     {!! Charts::scripts('chartjs') !!}
     {!! $chart->script() !!}
+    {!! $chartLastMonth->script() !!}
 @stop
