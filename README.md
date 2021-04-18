@@ -13,3 +13,9 @@
 
 
 ![](aqualarapi.JPG)
+
+### Warning!
+
+- This is a project for educational purposes.
+- The SD card can be damaged and the _Aqua Lara PI_ stops working.
+- Its fish and plants require your care and attention.
