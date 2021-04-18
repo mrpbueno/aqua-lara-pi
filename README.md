@@ -2,7 +2,7 @@
 
 ### Features
 
-- Web interface (Latavel - The PHP Framework for Web Artisans)
+- Web interface (Laravel - The PHP Framework for Web Artisans)
 - Co2 timer
 - Sunrise to sunset LED lighting automation
 - Monitoring of water temperature.
