@@ -7,6 +7,7 @@
     "require": {
         "php": ">=7.0.0",
         "barryvdh/laravel-ide-helper": "^2.4",
+        "composer/composer": "1.10.22",
         "consoletvs/charts": "5.4.*",
         "consoletvs/support": "^2.5",
         "doctrine/dbal": "^2.5",
